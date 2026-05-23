@@ -1,0 +1,170 @@
+\documentclass[11pt,a4paper]{article}
+
+% -----------------------------------------------------------------------
+% Packages
+% -----------------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+\usepackage{mdframed}
+
+% -----------------------------------------------------------------------
+% Color palette
+% -----------------------------------------------------------------------
+\definecolor{accept}{RGB}{0,120,0}
+\definecolor{reject}{RGB}{180,0,0}
+\definecolor{weak}{RGB}{180,100,0}
+\definecolor{borderblue}{RGB}{30,80,160}
+\definecolor{lightgray}{RGB}{245,245,245}
+\definecolor{sectionblue}{RGB}{20,60,140}
+
+% -----------------------------------------------------------------------
+% Section formatting
+% -----------------------------------------------------------------------
+\titleformat{\section}[block]{\large\bfseries\color{sectionblue}}{}{0em}{}[\vspace{-0.3em}\rule{\linewidth}{0.6pt}]
+\titleformat{\subsection}[runin]{\bfseries}{}{0em}{}[.\hspace{0.5em}]
+
+% -----------------------------------------------------------------------
+% Header / footer
+% -----------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\textit{[Target Venue] --- Peer Review Report}}
+\rhead{\small\textit{Submission \#[ID]}}
+\cfoot{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% -----------------------------------------------------------------------
+% Score-box environment
+% -----------------------------------------------------------------------
+\newenvironment{scorebox}[1]{%
+  \begin{mdframed}[backgroundcolor=lightgray,linecolor=borderblue,linewidth=1.2pt,
+                   innertopmargin=6pt,innerbottommargin=6pt,
+                   innerleftmargin=10pt,innerrightmargin=10pt]
+  \textbf{\color{sectionblue}#1}\\[4pt]
+}{%
+  \end{mdframed}
+}
+
+% -----------------------------------------------------------------------
+% Document
+% -----------------------------------------------------------------------
+\begin{document}
+
+% ======================== TITLE BLOCK ==================================
+\begin{center}
+  {\LARGE\bfseries [Target Venue] --- Peer Review Report Template}\\[6pt]
+  {\large\bfseries Paper Title:}\\[3pt]
+  {\large\itshape [Title Placeholder]}\\[10pt]
+  \rule{\linewidth}{1pt}\\[4pt]
+  \begin{tabular}{ll}
+    \textbf{Submission ID:}     & [ID Placeholder] \\
+    \textbf{Review Stage:}      & [Initial Review / Re-review / Final] \\
+    \textbf{Reviewer IDs:}      & [R1, R2, R3, ...] \\
+    \textbf{Review Date:}       & [YYYY-MM-DD] \\
+    \textbf{Target Venue:}      & [Read from USAGE.md target venue line] \\
+  \end{tabular}\\[4pt]
+  \rule{\linewidth}{1pt}
+\end{center}
+
+% ======================== SUMMARY SCORES ================================
+\section{Summary Scores}
+
+\begin{scorebox}{Overall Recommendation Summary}
+\begin{tabular}{lll}
+\toprule
+\textbf{Reviewer} & \textbf{Score} & \textbf{Recommendation} \\
+\midrule
+R1 & [x/x] & [Label] \\
+R2 & [x/x] & [Label] \\
+R3 & [x/x] & [Label] \\
+\midrule
+\textbf{Consensus} & [x/x] & [Label] \\
+\bottomrule
+\end{tabular}
+\end{scorebox}
+
+\begin{scorebox}{Dimension Scores}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Dimension} & \textbf{Score} & \textbf{Notes} \\
+\midrule
+Novelty         & [x/x] & [Placeholder] \\
+Methodology     & [x/x] & [Placeholder] \\
+Experiments     & [x/x] & [Placeholder] \\
+Clarity          & [x/x] & [Placeholder] \\
+Significance    & [x/x] & [Placeholder] \\
+\bottomrule
+\end{tabular}
+\end{scorebox}
+
+% ======================== REVIEW TEMPLATE ===============================
+\newpage
+\section{Review [N] ([RN]) --- Score: [x/x] --- [Recommendation Label]}
+
+\subsection{Summary}
+[High-level summary placeholder.]
+
+\subsection{Strengths}
+\begin{itemize}[leftmargin=2em]
+  \item [Strength placeholder 1]
+  \item [Strength placeholder 2]
+\end{itemize}
+
+\subsection{Weaknesses}
+\begin{enumerate}[leftmargin=2em]
+  \item [Weakness placeholder 1]
+  \item [Weakness placeholder 2]
+\end{enumerate}
+
+\subsection{Questions for the Authors}
+\begin{enumerate}[leftmargin=2em]
+  \item [Question placeholder 1]
+  \item [Question placeholder 2]
+\end{enumerate}
+
+\subsection{Recommendation}
+[Recommendation rationale placeholder.]
+
+% Copy the review block above for R2/R3/R4/... as needed.
+
+% ======================== REVISION ACTION ITEMS =========================
+\newpage
+\section{Revision Action Items (Template)}
+
+\begin{scorebox}{Action Item Format}
+Each item should follow this structure:\\
+\textbf{[ID]} [Priority: Critical/Major/Minor] [Owner] [Status]\\
+\textbf{Issue:} [Placeholder]\\
+\textbf{Required Change:} [Placeholder]\\
+\textbf{Evidence/Verification:} [Placeholder]\\
+\textbf{Files to Update:} [Placeholder]
+\end{scorebox}
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{[A1]} [Placeholder]
+  \item \textbf{[A2]} [Placeholder]
+  \item \textbf{[A3]} [Placeholder]
+\end{enumerate}
+
+% ======================== RESPONSE TEMPLATE =============================
+\section{Response-to-Reviewers Snippet Template}
+
+\begin{verbatim}
+\textbf{R1.X}: [Reviewer comment verbatim]
+
+\textbf{Response}: [Our response]
+
+\textbf{Changes}: [Specific section/line/file level changes]
+\end{verbatim}
+
+\end{document}

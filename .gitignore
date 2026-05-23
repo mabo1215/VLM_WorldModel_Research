@@ -1,0 +1,11 @@
+docs/academic-research-skills/*
+docs/Bodhi_科研Pipeline总览.md
+src/.env
+
+agents/
+USAGE.md
+AGENTS.md
+
+.gitkeep
+.gitmodules
+
