@@ -1,0 +1,6 @@
+[submodule "docs/academic-research-skills"]
+	path = docs/academic-research-skills
+	url = https://github.com/Imbad0202/academic-research-skills.git
+[submodule "paper"]
+	path = paper
+	url = https://github.com/mabo1215/VLM_WorldModel_latex.git
