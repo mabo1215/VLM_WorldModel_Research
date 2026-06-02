@@ -1,29 +1,46 @@
 # VLM Paper Review Template
 
-## 基本信息
+## 1. 基础信息
 - **Paper Title:** 
 - **Venue / Year:** 
 - **Paper Link:** 
 
-## 核心内容
+## 2. 核心内容
 - **Main Problem:** 
 - **Core Method:** 
 - **Model Architecture:** 
-- **Task Type:** (VQA / Visual Grounding / Spatial Reasoning / Compositional Reasoning / Video Understanding / Other)
+- **Task Type (勾选):** 
+  - [ ] Large Vision-Language Models
+  - [ ] Multimodal instruction tuning
+  - [ ] Image-text alignment
+  - [ ] Visual question answering (VQA)
+  - [ ] Visual grounding
+  - [ ] Spatial reasoning in VLM
+  - [ ] Compositional reasoning in VLM
+  - [ ] Video VLM
 
-## 实验设置
+## 3. 实验设置
 - **Dataset(s):** 
 - **Evaluation Metric(s):** 
 - **Main Result:** 
 
-## 关键分析
-- **Limitation:** (每篇论文至少写2-3点)
-- **Relevance to our paper:** 
+## 4. 关键分析 (Phase 1验收重点)
+- **Limitation (必填，至少2点):** 
+  1. 
+  2. 
+  3. 
 
-## 基线潜力
+- **Relevance to our paper (与候选方向A的关系):** 
+
+## 5. 基线潜力 (Phase 1验收重点)
 - **Can be used as baseline?** Yes / No
 - **If Yes, which task/scenario?** 
+  - [ ] Object State Recognition
+  - [ ] Spatial Relation Reasoning
+  - [ ] Temporal Change Understanding
+  - [ ] Action Consequence Prediction
+  - [ ] Future State QA
 
-## 额外笔记
-- **Key Insight:** 
-- **Follow-up Work to Check:** 
+## 6. 附加笔记（辅助Phase 1总结）
+- **Research Gap 线索:** (这篇论文暴露了VLM在哪方面还做得不好？)
+- **可引用的关键观点:** 
