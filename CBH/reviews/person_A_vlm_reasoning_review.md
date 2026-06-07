@@ -4,6 +4,8 @@
 
 **Venue / Year:** arXiv 2024
 
+**Paper Link:** https://arxiv.org/abs/2402.00253
+
 **Main Problem:** LVLM 在实际应用中存在严重的“幻觉”问题，即生成的文本与图像事实内容不一致，影响其可靠性。
 
 **Core Method:** 这是一篇综述论文，系统性地梳理了 LVLM 幻觉的概念定义、评估方法、成因分析（数据、视觉编码器、模态对齐、LLM）和缓解策略。
