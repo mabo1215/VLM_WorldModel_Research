@@ -43,3 +43,50 @@
 - 在实验时使用了冻结的预训练模型，没有进行微调，也没有导入外部工具，如计算器，数据库等工具
 ## Relevance to our paper:
 - 展示了大语言模型能够通过特定算法与特定的框架，形成自己的世界模型，对任务处理形成自己的规划，从而去提高复杂任务的推理成功率。
+# review 2
+## Paper Title:
+- WorldVLA: Towards Autoregressive Action World Model
+## Venue / Year:
+- Venue：arXiv preprint (cs.RO, cs.AI)
+- Year：2025
+## Main Problem:
+- 现有的视觉-语言-动作（VLA）模型与世界模型是分离的，缺乏统一的框架，导致无法充分利用两者的互补优势。
+- 1、缺乏统一框架：世界模型预测未来图像时未充分利用动作信息，动作模型生成动作时未利用对未来状态的预测能力
+- 2、自回归误差累积：在自回归方式下生成连续动作序列时，模型泛化能力有限，早期动作的误差会逐步传播到后续动作，导致整体性能下降
+- 3、在复杂长时序任务中表现不佳
+## Core Method:
+- 提出了WorldVLA，一种自回归动作世界模型，将VLA模型和世界模型融合在单一框架中。核心思想是：使用一个统一的LLM架构同时建模动作生成和未来图像预测。世界模型利用动作和图像理解来预测未来图像，学习环境的底层物理规律以改进动作生成；动作模型基于图像观测生成后续动作，帮助视觉理解并反过来促进世界模型的视觉生成。针对自回归动作生成中的误差传播问题，提出了动作注意力掩码策略（Action Attention Mask），在生成当前动作时有选择性地遮蔽先前动作的注意力，防止误差传播。
+## Model Architecture:
+- 基于LLM的统一自回归框架（7B参数）
+- 三个独立的Tokenizer：图像（VQ-GAN）、文本、动作（共享同一词汇表）
+- 支持256×256和512×512分辨率
+## Dataset:
+- 1、机器人操作	LIBERO（LIBERO-Spatial / Object / Goal / Long）
+- 2、泛化测试	LIBERO-plus（10,030个任务，7个扰动维度）
+## Evaluation Metric:
+### 动作模型（LIBERO任务）
+- 成功率（Success Rate）
+- 按四个任务套件分别评估：Spatial、Object、Goal、Long
+### 世界模型（视频预测）
+- Fréchet Video Distance（FVD，越低越好）
+- Peak Signal-to-Noise Ratio（PSNR）
+- Structural Similarity Index（SSIM）
+- Learned Perceptual Image Patch Similarity（LPIPS）
+## Main Result:
+| 任务/指标 | WorldVLA 结果 | 对比基线 | 提升幅度 |
+| :--- | :---: | :---: | :---: |
+| LIBERO-Spatial 成功率 | **87.6%**（512×512） | 独立动作模型 | +4%（平均） |
+| LIBERO-Object 成功率 | **96.2%**（512×512） | 独立动作模型 | +4%（平均） |
+| LIBERO-Goal 成功率 | **83.4%**（512×512） | 独立动作模型 | +4%（平均）|
+| LIBERO-Long 成功率 | **60.0%**（512×512）| 独立动作模型 | +4%（平均）|
+| 四任务平均成功率 | **81.8%**（512×512）| 独立动作模型 | +4% |
+| 世界模型 FVD | **降低10%** | 传统世界模型 | -10% FVD |
+| LIBERO-Goal 5步动作块（无掩码） | 36.7% | — | — |
+| LIBERO-Goal 5步动作块（有掩码）| **81.8%** | 无掩码 | **+120%** |
+| 抓取成功率提升 | **4–23%** | 独立动作模型 | 4%-23% |
+## Limitation:
+- 在LIBERO-plus泛化基准上表现有限（25.3%），远低于SOTA模型（如OpenVLA-OFT+ 79.6%）
+- 与2025年顶级VLA模型（如VLA-Adapter-Pro 98.5%、OpenVLA-OFT 97.1%）相比仍有差距
+- 在长时序任务（LIBERO-Long）上成功率仅60%，长程规划能力有待提升
+## Relevance to our paper:
+- 展示了VLA模型与世界模型可以统一到一个自回归框架中，通过动作注意力掩码策略缓解自回归误差累积问题，验证了动作生成与视觉预测之间的相互增强关系，为具身智能中的统一建模提供了新的思路。
