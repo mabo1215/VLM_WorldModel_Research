@@ -90,3 +90,120 @@
 - 在长时序任务（LIBERO-Long）上成功率仅60%，长程规划能力有待提升
 ## Relevance to our paper:
 - 展示了VLA模型与世界模型可以统一到一个自回归框架中，通过动作注意力掩码策略缓解自回归误差累积问题，验证了动作生成与视觉预测之间的相互增强关系，为具身智能中的统一建模提供了新的思路。
+# review 3
+## Paper Title:
+- Sora as an AGI World Model? A Complete Survey on Text-to-Video Generation
+## Venue / Year:
+- Venue：arXiv preprint
+- Year：2024
+## Main Problem:
+- 尽管Sora等文本到视频生成模型展现了接近真实的视频生成能力，但在Sora生成视频缺点的补充审查指出了在数据集、评估指标、高效架构和人类可控生成等视频生成支撑方面需要更深入研究的方向，从技术角度探索文生视频模型如何更接近世界模型。
+## Core Method:
+- 采用PRISMA系统综述框架，从IEEE Xplorer、ACM Library、Scopus和arXiv等数据库中筛选出97篇高相关度论文。核心贡献在于从四个技术维度系统解构文本到视频生成模型：
+- (1) 核心构建模块（语言解释器、视觉处理器、时序处理器）
+- (2) 辅助技术（帧序列化、高效学习）
+- (3) 数据集与评估指标
+- (4) 应用与伦理影响。
+## Model Architecture:
+- 综述涵盖四大类生成架构：\
+  VQ-VAE（GODIVA等）\
+  GAN（StoryGAN, TGANs-C等）\
+  Autoregressive Transformer（Phenaki, VideoPoet, W.A.L.T.等）\
+  Diffusion（Stable Diffusion系列, Make-A-Video, Sora等）\
+- 语言解释器：RNN, BERT/T5, CLIP\
+- 视觉处理器：VQ-VAE, GAN, VQ-GAN, Diffusion\
+- 时序处理器：Temporal Attention, RNN, Pseudo-3D Convolution/Attention, LLM
+## Dataset:
+- 调研数据集：\
+  1、WebVid-10M/2M（34篇论文使用）\
+  2、MSR-VTT（11篇，评估基准）\
+  3、LAION-5B（大规模图文对）\
+  4、UCF-101（10篇，动作分类基准）\
+  5、PororoSV（故事可视化）
+## Evaluation Metric:
+### 视觉质量
+- Inception Score（IS）
+- Fréchet Inception Distance（FID）
+- Fréchet Video Distance（FVD）
+- Generative Adversarial Metric（GAM）
+### 文本-视觉对齐
+- CLIP R-Precision
+- CLIP Score / CLIPSIM / CLIP RM
+### 人类感知评估
+- DrawBench（11个评估类别，200个提示词）
+- 人工评估四维度：视觉质量、文本忠实度、运动真实感、时序一致性
+## Main Result:
+| 维度 | 关键发现 |
+| :--- | :--- |
+| 技术架构趋势 | 80%以上的论文采用基于Stable Diffusion的伪3D卷积/注意力扩展，已成为视频扩散模型的事实标准 |
+| 语言解释器 | CLIP文本编码器使用最广泛；T5系列在强生成模型（Phenaki等）中更受青睐 |
+| 时序处理 | 伪3D卷积+时序注意力是最主流方案；LLM作为时序编码器是新兴方向 |
+| 高效学习策略 | 图像-视频联合训练（Phenaki开创）、Adapter/运动模块插入、一致性模型蒸馏、解耦学习、模块化生成为五大主流策略 |
+| 评估指标分布 | UCF101-FVD（26%）和UCF101-IS（23%）使用最多，其次是MSRVTT-CLIPSIM（20%） |
+| Sora局限性 | 物理交互失败（液体流向、物体穿透）、尺度比例失真（相机运动导致）、物体幻觉（遮挡后消失/克隆）、因果效应缺失（动作-反应不匹配） |
+## Limitation:
+- 调查截止日期为2024年3月18日，未覆盖2024年下半年以来的最新进展（如Sora技术报告的详细技术细节仍未公开）
+- 虽然分析了Sora的局限性，但由于Sora本身未开源，分析主要基于公开演示和视觉观察，缺乏对模型内部机制的深入验证
+- 论文主要聚焦于技术综述，未提出新的模型或方法
+
+## Relevance to our paper:
+- 提供了从世界模型视角审视文本到视频生成模型的系统框架，明确了"世界模型"应具备的可扩展性（Scalability）和泛化性（Generalizability）两个核心要求。
+# review 4
+## Paper Title:
+- VerseCrafter: Dynamic Realistic Video World Model with 4D Geometric Control
+## Venue / Year:
+- Venue：CVPR 2026
+- Year：2026
+## Main Problem:
+- 现有的视频世界模型在提供统一的相机运动和多个物体运动控制方面存在根本性困难。视频本质上是2D图像平面的投影，导致：\
+(1) 2D控制信号（边界框、光流、分割掩码）缺乏3D感知，在大视角变化下容易失效；\
+(2) 现有3D控制方法（深度图、稀疏3D轨迹、3D边界框、SMPL-X人体模型）要么是类别特定的，要么是刚性的，无法灵活统一地建模多物体动态；\
+(3) 缺乏一个紧凑、可编辑、共享世界坐标系的4D几何场景状态表示。
+
+## Core Method:
+- 提出了VerseCrafter，一个基于几何驱动的视频世界模型，从显式的4D几何场景状态生成动态逼真的视频，同时实现对相机和多物体运动的解耦控制。我们的框架包含两个关键组件：\
+(i)统一的4D几何控制表示，在共享世界坐标系中表示4D几何场景状态；\
+(ii)轻量级的GeoAdapter，将编码后的4D控制图注入冻结的Wan2.1-14B骨干网络，同时保留其强大的视觉先验。
+## Model Architecture:
+- 基础骨干：Wan2.1 T2V-14B（冻结，含Wan Encoder、Wan-DiT降噪器、Wan Decoder）
+- 控制适配器：GeoAdapter（轻量DiT风格分支，每5个Wan-DiT块配对1个GeoAdapter块，输出线性投影后作为残差调制加入）
+- 4D Geometric Control：静态背景点云 + 逐物体3D高斯轨迹 {μᵗₒ, Σᵗₒ}
+- 渲染输出：4通道控制图（背景RGB/深度、3D高斯轨迹RGB/深度、软融合掩码）
+- 文本编码器：umT5
+- 训练分辨率：480P → 720P两阶段训练
+- 推理：50步去噪，CFG scale=5.0，81帧720P视频约1152秒（8×96GB GPU）
+## Dataset:
+- 1、VerseControl4D
+- 2、26%来自Sekai-Real-HQ，74%来自SpatialVID-HQ
+- 3、20%为静态场景样本，用于相机控制评估
+- 数据处理流程：场景切割（PySceneDetect，81帧子片段）→ 质量过滤（Grounded-SAM2 + 美学/亮度评分）→ 自动标注（Qwen2.5-VL-72B生成描述，MoGe-2深度估计，MegaSAM相机轨迹）
+## Evaluation Metric:
+### 联合相机与物体运动控制
+- VBench-I2V（Overall Score, Imaging Quality, Aesthetic Quality, Dynamic Degree, Motion Smoothness, Background/Subject Consistency, I2V Background/Subject）
+- RotErr（旋转误差，越低越好）
+- TransErr（平移误差，越低越好）
+- ObjMC（物体运动控制误差，平均欧氏距离，越低越好）
+### 相机-only运动控制（静态场景）
+- 同上VBench-I2V指标
+- RotErr, TransErr
+## Main Result:
+| 任务 | 指标 | VerseCrafter | 最佳基线 | 提升幅度 |
+| :--- | :--- | :---: | :---: | :---: |
+| 联合控制 | Overall Score | **88.10** | 85.47（Yume） | +2.63 |
+| 联合控制 | RotErr ↓ | **0.890** | 1.361（Uni3C） | -34.6% |
+| 联合控制 | TransErr ↓ | **3.103** | 7.731（Uni3C） | -59.9% |
+| 联合控制 | ObjMC ↓ | **2.507** | 5.883（Uni3C） | -57.4% |
+| 相机-only | Overall Score | **86.80** | 85.33（FlashWorld） | +1.47 |
+| 相机-only | RotErr ↓ | **0.650** | 1.792（FlashWorld） | -63.7% |
+| 相机-only | TransErr ↓ | **2.587** | 3.257（FlashWorld） | -20.6% |
+| 消融-3D高斯vs点轨迹 | ObjMC | **2.507**（高斯） | 6.896（点轨迹） | -63.6% |
+| 消融-有/无深度 | RotErr | **0.890**（有深度） | 1.177（无深度） | -24.4% |
+| 消融-解耦/合并控制 | ObjMC | **2.507**（解耦） | 3.726（合并） | -32.7% |
+## Limitation:
+- 在泛化基准（LIBERO-plus等）上的表现未报告，真实世界泛化能力有待进一步验证
+- 训练需要大量计算资源：16×96GB GPU，约380小时（两阶段训练）
+- 推理耗时较长：81帧720P视频需约1152秒（8×96GB GPU），难以满足实时应用需求
+- 依赖输入单张图像进行3D重建，对于运动模糊或遮挡严重的场景，深度估计和点云重建质量可能下降
+- 3D高斯轨迹的编辑仍需人工在Blender等3D编辑器中进行关键帧操作，自动化程度有限
+## Relevance to our paper:
+- 展示了将显式3D几何信息（4D Geometric Control）与视频扩散模型深度融合的技术路线，验证了通过显式几何表示可以实现精确的相机和多物体运动控制。
