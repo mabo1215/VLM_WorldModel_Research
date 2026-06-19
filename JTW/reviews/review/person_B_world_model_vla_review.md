@@ -322,3 +322,113 @@ GCIQL[52]——隐式Q学习[33]的目标条件版本，是一种强大且广泛
 - 规划依赖潜空间中的二次型成本函数（LQG假设），对于非欧几里得距离的目标表示可能不适用
 ## Relevance to our paper:
 - 作为潜空间动力学模型的奠基性工作，E2C首次展示了通过变分推断将最优控制公式融入表示学习的技术路线。其核心洞见——在潜空间中显式约束动力学为局部线性形式，使得SOC算法可以直接在学到的特征空间中进行规划——对后续世界模型研究（如Dreamer、PLDM）产生了深远影响。其提出的"编码器-动力学-规划器"三阶段框架和训练时强制过渡与编码一致性的KL正则化策略，至今仍是潜空间世界模型设计的核心范式之一。
+# review 7
+## Paper Title:
+- RealWonder: Real-Time Physical Action-Conditioned Video Generation
+## Venue / Year:
+- Venue：arXiv preprint (cs.CV)
+- Year：2026（March）
+## Main Problem:
+当前的视频生成模型无法模拟3D动作（如力和机器人操作）的物理后果，因为它们缺乏对动作如何影响3D场景的结构性理解,本质上仍局限于被动生成或简单的2D控制。
+## Core Method:
+- 提出了RealWonder，首个支持实时物理动作条件视频生成的系统。核心洞察：使用物理仿真作为中间表示桥梁——将3D物理动作通过物理仿真转化为视频模型能够自然处理的视觉表示。系统由三个精心设计的组件构成：\
+(1) 输入图像重建可仿真的3D场景表示，估计适合实时物理的几何和材料属性\
+(2) 应用物理仿真计算场景对输入动作的动态响应，将结果渲染为编码运动模式同时保留动作因果关系的光流F_t和粗糙RGB预览Ṽ_t（\
+(3) 基于物理的视觉表示与原始图像一起，条件化一个蒸馏视频生成器，在4步扩散中产生逼真结果
+## Model Architecture:
+- 对于物理仿真，我们采用Genesis作为仿真器。我们的仿真使用0.01s的时间步长，每个仿真步最多20个子步以保证数值稳定性。
+- 对于机器人动作，我们使用Genesis提供的Franka机器人模型，支持机器人与多种材料的交互。
+- 对于视频模型训练，我们采用VideoXFun wan2.1-1.3B-InP模型作为I2V基础模型。我们冻结其所有权重，并在每个注意力块中注入秩为2048的LoRA模块。
+- 应用自强制风格训练，获得蒸馏的、实时的、流条件视频生成器。
+## Dataset:
+- 自建200K"光流-视频"对：\
+  1、180K真实视频片段（来自OpenVid，80-120帧，使用RAFT提取光流）\
+  2、20K合成视频（Wan2.1-14B-T2V生成，来自VidProM提示词）\
+  评估集：30张图像（真实+合成），覆盖多种材质（布料、刚体、弹性体、液体、气体、沙、雪）及相应物理动作
+## Evaluation Metric:
+### 自动指标
+- VBench Visuals（成像质量）
+- VBench Aesthetics（美学质量）
+- VBench Consistency（时序一致性）
+- GPT-4o-based PhysReal（物理真实感）
+### 人工评估（2AFC协议，400名参与者，4个维度）
+- Action Following（动作跟随）
+- Motion Fidelity（运动保真度）
+- Visual Quality（视觉质量）
+- Physical Plausibility（物理合理性）
+### 速度指标
+- FPS（帧率）
+- Latency（延迟）
+## Main Result:
+| 评估维度 | 条件 | RealWonder | 最佳基线 | 提升幅度 |
+| :--- | :--- | :---: | :---: | :--- |
+| 自动-Visuals | VBench | **0.708** | 0.700（Tora） | +0.008 |
+| 自动-Aesthetics | VBench | **0.593** | 0.603（CogVideoX） | -0.010（略低） |
+| 自动-Consistency | VBench | **0.265** | 0.234（CogVideoX） | +0.031 |
+| 自动-PhysReal | GPT-4o | **0.705** | 0.624（CogVideoX） | +0.081 |
+| 人工-动作跟随 | vs PhysGaussian | **88.4%** | 11.6% | 显著偏好RealWonder |
+| 人工-物理合理性 | vs PhysGaussian | **87.1%** | 12.9% | 显著偏好RealWonder |
+| 人工-动作跟随 | vs CogVideoX-I2V | **89.6%** | 10.4% | 显著偏好RealWonder |
+| 人工-动作跟随 | vs Tora | **83.9%** | 16.1% | 显著偏好RealWonder |
+| 生成速度 | FPS | **13.2** | 0.225（CogVideoX） | **58.7×** |
+| 延迟 | 首帧延迟 | **0.73s** | 4.84s（PhysGaussian） | **-84.9%** |
+## Limitation:
+- 3D场景重建依赖单张图像的深度估计，在深度估计不准确时会导致物理仿真和视频生成结果次优
+- 训练数据中20K为合成视频，可能与真实世界域有分布差异
+- 视频生成器基于1.3B参数模型，视觉质量和分辨率（480×832）不及更大模型
+- 对于极其复杂的长程物理交互（如多物体长时间相互碰撞），物理仿真和视频生成的累积误差可能增加
+## Relevance to our paper:
+- 展示了利用物理仿真作为中间桥梁来实现3D物理动作条件视频生成的技术范式。在世界模型的领域，此结论也有助于我们研究如何让世界模型更为全能，实用。
+# review 8
+## Paper Title:
+- Generating Action-conditioned Prompts for Open-vocabulary Video Action Recognition
+## Venue / Year:
+- Venue：ACM MM 2024
+- Year：2024
+## Main Problem:
+- 开放词汇视频动作识别面临的根本挑战是：现有方法虽然通过时序建模增强了视频编码器对已见过动作的识别能力，但在面对从未见过的新动作时表现不佳。
+## Core Method:
+-  适应CLIP进行视频动作识别 (Adapt CLIP for Video Action Recognition)\
+- 动作条件提示生成 (Action-conditioned Prompts Generation)
+- 多模态动作知识对齐 (Multi-modal Action Knowledge Alignment - MAKA)
+## Model Architecture:
+- 视频编码器：CLIP ViT-B/16（默认）或ViT-L/14
+- 文本编码器：CLIP文本编码器
+- 提示词生成：GPT-4（LLM，不参与推理）
+- MAKA对齐：视频帧嵌入 v∈Rⁿᵛ×ᵈ × 提示词嵌入 c∈Rⁿᵗ×ᵈ → 双向最大相似度平均
+  sim(v,c) = ½(simᵥ₂ₜ(v,c) + simₜ₂ᵥ(v,c))
+- 多视图推理：8帧输入，2个空间裁剪×2个时间视图（全监督时：16帧，4空间裁剪×3时间视图）
+- 与基线对比方法：Vanilla CLIP, ActionCLIP, XCLIP, ViFi-CLIP, Open-VCLIP, BIKE, Text4Vis, DiST
+## Dataset:
+- Kinetics-400（训练集，~240K视频，400类动作）
+- Kinetics-600（~390K视频，600类，零-shot评估）
+- HMDB-51（~7K视频，51类，零-shot评估）
+- UCF-101（~13K视频，101类，零-shot评估）
+- SSv2（Something-Something v2，~220K视频，174类，base-to-novel评估）
+## Evaluation Metric:
+### 主要指标
+- Top-1准确率
+### 评估设置
+- 零-shot（Zero-shot）：K400训练 → HMDB-51 / UCF-101 / K600评估
+- Base-to-novel泛化：在base类上训练 → novel类评估（调和平均HM）
+- Few-shot：每类1/2/4/8/16样本
+- 全监督（Fully-supervised）
+## Main Result:
+| 设置 | 模型/基线 | HMDB-51 | UCF-101 | K600 | 提升 |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| 零-shot (ViT-B/16) | AP-CLIP（Ours） | **55.4%** | **82.4%** | **73.4%** | — |
+| 零-shot (ViT-B/16) | ViFi-CLIP | 51.3% | 76.8% | 71.2% | +4.1/+5.6/+2.2 |
+| 零-shot (ViT-B/16) | XCLIP | 44.6% | 72.0% | 65.2% | +10.8/+10.4/+8.2 |
+| 零-shot (ViT-B/16) | Open-VCLIP+Action Prompts | **57.0%** | **85.1%** | **74.4%** | +3.1/+1.7/+1.4 |
+| 零-shot (ViT-L/14) | Open-VCLIP+Action Prompts | **60.0%** | **90.2%** | **81.9%** | **新SOTA** |
+| Base-to-novel (K400) | AP-CLIP 调和平均HM | **最高** | — | — | — |
+| Base-to-novel (HMDB) | AP-CLIP 调和平均HM | **最高** | — | — | — |
+| Base-to-novel (UCF) | AP-CLIP 调和平均HM | **最高** | — | — | — |
+| Base-to-novel (SSv2) | AP-CLIP 调和平均HM | **最高** | — | 时序复杂数据集提升有限 | — |
+## Limitation:
+- 对于时序复杂的数据集（如SSv2），生成的知识提示词带来的提升有限，说明纯文本属性描述在捕捉细粒度时序模式方面存在局限
+- 提示词生成依赖于GPT-4，虽然无需手动标注，但存在潜在的生成偏差和不可靠内容
+- MAKA机制需要计算每帧与所有提示词的相似度，推理时计算开销随视频帧数和提示词数量增加
+- CLIP模型本身在细粒度和时序建模上的固有限制未被突破，方法更多是发掘了CLIP已有的表征能力
+## Relevance to our paper:
+- 展示了利用大语言模型的先验知识来增强视频动作识别中文本表征的技术路线。其核心洞见——为不同动作生成知识丰富的多属性描述提示词而非使用统一的标准提示词——对于提升开放词汇识别中的泛化能力具有重要的方法论意义。在世界模型的设计里，使用LLA生成提示词，是训练世界模型自我思考能力的一个好方法。
