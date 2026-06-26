@@ -88,3 +88,139 @@
 
 **Can be used as baseline?** Yes
 **If Yes, which task/scenario?** ARDS 本身是数据选择方法，不是模型。但其**评估协议**（Permutation Attack + Symbol Attack）可作为你的鲁棒性测试基线；论文使用的 LLaVA-1.5 可作为模型基线。
+
+### Review #4
+
+**Paper Title:** LLaDA-V: Large Language Diffusion Models with Visual Instruction Tuning
+
+**Venue / Year:** CVPR 2026
+
+**Paper Link:** https://doi.org/10.48550/arXiv.2505.16933
+
+**Main Problem:** 现有的 MLLM 几乎都基于自回归（AR）模型，而**因果注意力**可能不适合处理视觉输入中的**空间关系**。能否用一个**纯扩散模型**（双向注意力）来实现有竞争力的多模态理解？
+
+**Core Method:** 基于 LLaDA（大规模语言扩散模型），集成 SigLIP 视觉编码器 + MLP 连接器，采用**双向注意力**机制。三阶段训练：(1) 语言-图像对齐（LLaVA-Pretrain）；(2) 大规模指令微调（MAmoth-VL 10M 单图 + 2M 多图/视频）；(3) 推理增强（VisualWebInstruct）。
+
+**Model Architecture:** SigLIP-400M/384px（视觉编码器）+ 两层 MLP（投影器）+ LLaDA-8B（扩散语言模型，双向注意力）
+
+**Dataset:** LLaVA-Pretrain（对齐）；MAmoth-VL（SI-10M + OV-2M，指令微调）；VisualWebInstruct（推理增强）
+
+**Evaluation Metric:** MMMU, MME, MMBench, SeedBench, MathVista, AI2D, ChartQA, DocVQA, RealworldQA, MuirBench, MLVU, VideoMME 等
+
+**Main Result:** 
+1. LLaDA-V 在纯扩散 MLLM 中达到 SOTA，超过 LLaMA3-V 在 11 个基准上的表现（即使语言塔更弱）
+2. 数据缩放实验显示 LLaDA-V 从数据增加中获益
+3. **双向注意力**比因果注意力在视觉任务上表现更好（Ablation：No Mask 优于对话因果掩码）
+4. attention pattern 分析显示 LLaDA-V 更全局/双向，更擅长捕捉空间依赖
+
+**Limitation:** 
+1. 语言塔（LLaDA）本身弱于 LLaMA3-8B 和 Qwen2-7B
+2. 在图表/文档理解（AI2D, DocVQA）和真实场景理解（RealworldQA）上落后于 LLaMA3-V
+3. 未做偏好对齐（RLHF/DPO），可能影响对话能力
+
+**Relevance to our paper:** 
+与候选方向 A（VLM 空间关系理解）**高度相关**。论文核心论点是：**双向注意力比因果注意力更适合捕捉空间关系**，这正是研究方向的理论支持。论文的 attention pattern 分析提供了“为什么 VLM 可能空间推理不足”的架构层面解释——自回归模型的因果注意力限制了全局空间信息整合。LLaDA-V 可作为研究注意力机制对空间推理影响的对比基线。
+
+**Can be used as baseline?** Yes
+**If Yes, which task/scenario?** 可作为空间关系理解、视觉推理任务的**非自回归基线**，用于对比自回归模型（如 LLaMA3-V）在空间任务上的表现差异。
+
+### Review #5
+
+**Paper Title:** ITA: Image-Text Alignments for Multi-Modal Named Entity Recognition
+
+**Venue / Year:** NAACL 2022
+
+**Paper Link:** https://aclanthology.org/2022.naacl-main.232/
+
+**Main Problem:** 多模态 NER 中，图像特征（来自 ResNet）和文本特征（来自 BERT）未对齐，注意力机制难以建模跨模态交互；现有方法未充分挖掘文本表示的力量。
+
+**Core Method:** 提出 ITA（Image-Text Alignments），将图像转换为文本空间：(1) 局部对齐：物体检测器提取物体标签+属性；(2) 全局对齐：图像标题模型生成 5 个描述；(3) OCR 对齐：提取图像中的文字。三者拼接为跨模态输入，喂入 BERT/XLMR-CRF。额外提出跨视图对齐（CVA），最小化有/无图像输入的输出分布 KL 散度，提升纯文本场景的鲁棒性。
+
+**Model Architecture:** BERT / XLM-RoBERTa（文本编码器）+ VinVL（物体检测+标题生成）+ Tesseract/PaddleOCR（OCR）+ 线性链 CRF（解码）
+
+**Dataset:** Twitter-15, Twitter-17, SNAP（多模态 NER 数据集）
+
+**Evaluation Metric:** F1 分数（实体级别）
+
+**Main Result:** ITA-All+CVA 在 Twitter-15 上 F1=76.01，Twitter-17 上 86.45，SNAP 上 87.44，超越之前所有 SOTA（UMT, RpBERT, UMGF 等）。CVA 显著提升纯文本输入视图的精度（从 74.79 → 76.01）。使用 XLMR 比 BERT 更强（Twitter-15: 78.25）。
+
+**Limitation:** 
+1. 依赖多个外部模型（检测、标题、OCR），推理速度慢
+2. 仅针对 NER 任务，不涉及空间推理或通用 VLM 理解
+3. 在图像与文本无关时可能引入噪声（CVA 部分缓解）
+
+**Relevance to our paper:** 
+间接相关但有一定价值。论文的核心是**图像-文本对齐**问题——将图像信息转换为文本空间以利用 BERT 的注意力机制。这与研究 VLM 的**空间关系理解**有概念上的联系：VLM 也面临视觉-文本对齐问题，而双向注意力（LLaDA-V）vs 因果注意力（LLaMA3-V）的讨论与此类似。论文对**纯文本 vs 多模态输入**的对比（CVA 模块）可为实验设计提供参考。
+
+**Can be used as baseline?** No
+**If Yes, which task/scenario?** 不适用（任务领域不同，MNER vs MLLM 视觉推理）
+
+### Review #6
+
+**Paper Title:** SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities
+
+**Venue / Year:** CVPR 2024
+
+**Paper Link:** https://arxiv.org/abs/2401.12168
+
+**Main Problem:** 当前 VLM 在 3D 空间推理（如距离估计、大小比较）上能力有限，根本原因是**训练数据中缺乏 3D 空间知识**。
+
+**Core Method:** 设计自动化 3D 空间 VQA 数据生成框架：(1) 用 CLIP 过滤场景图像；(2) 用开源模型提取物体分割、深度、描述；(3) 将 2D 图像提升到 3D 点云并规范化坐标；(4) 用模板生成 38 种定性/定量空间 QA 对。最终在 1000 万张图像上生成 20 亿个 VQA 对，用于训练 VLM（PaLM 2-S）。
+
+**Model Architecture:** ViT（视觉编码器）+ PaLM 2-S（语言模型），基于 PaLM-E 架构
+
+**Dataset:** 合成数据：WebLI 和 VQA 数据集中的 1000 万张图像 → 20 亿空间 VQA 对；评估：人工标注的 546 个空间 VQA 对
+
+**Evaluation Metric:** 定性：人类评估成功率；定量：有效格式输出率 + 半到两倍范围内准确率
+
+**Main Result:** 
+1. 定性空间 VQA 准确率显著超越 GPT-4V、PaLI、PaLM-E、LLaVA-1.5 等基线
+2. 定量距离估计：99% 输出有效数值，约 50% 在半到两倍真值范围内
+3. 解冻 ViT 比冻结效果更好（细粒度估计 +2.8%）
+4. 模型能从噪声数据中学习空间常识
+5. 解锁链式思维空间推理和机器人密集奖励标注应用
+
+**Limitation:** 
+1. 依赖单目深度估计器（ZoeDepth）的精度，在远距离和大场景上误差较大
+2. 合成数据基于有限的问题模板，多样性受限
+3. 仅针对单图像，未扩展到视频
+
+**Relevance to our paper:** 
+**与候选方向 A 完美匹配**。论文直接研究 VLM 的空间关系理解（定性）和物体状态/距离的定量估计，正是"VLM 是否理解世界状态"的核心问题。论文的**数据生成框架**和**训练策略**可作为后续实验设计的参考；**解冻 ViT 提升空间推理**的发现可支持分析结果；论文指出"训练数据缺乏 3D 空间知识"是根本原因，可作为研究 gap 的直接论据。
+
+**Can be used as baseline?** Yes
+**If Yes, which task/scenario?** 可作为**空间关系推理**和**定量距离估计**任务的强基线；其数据生成方法可作为你构建自己评估数据的参考。
+
+### Review #7
+
+**Paper Title:** When More Is Less: A Systematic Analysis of Spatial and Commonsense Information for Visual Spatial Reasoning
+
+**Venue / Year:** arXiv 2026 (Under Review)
+
+**Paper Link:** https://arxiv.org/abs/2602.21619
+
+**Main Problem:** 当前研究普遍认为向 VLM 注入额外信息（空间线索、常识知识、思维链）能提升空间推理能力，但**何种信息、何种形式、何种数量最有效**尚不清楚。本文系统探究：注入不同类型和形式的信息时，VLM 的空间推理能力究竟如何变化？是否“越多越好”？
+
+**Core Method:** 基于假设的实证分析。将三种 VLM（Qwen-2-VL-7B/72B, LLaVA-NeXT-34B, BLIP-3-8B）作为固定黑盒，在 VSR 和 EmbSpatial 两个空间推理基准上，系统地改变注入信息的**类型**（空间线索 SC / 常识知识 CK / 思维链 CoT）、**形式**（自然语言 vs 数值/坐标）、**数量**和**相关性**，观察性能变化。
+
+**Model Architecture:** 不提出新模型；测试对象为 Qwen-2-VL-7B/72B, LLaVA-NeXT-34B, BLIP-3-8B
+
+**Dataset:** VSR（Visual Spatial Reasoning，判断物体间空间关系）和 EmbSpatial（具身空间推理，涉及三维空间、物体位置和路径规划）
+
+**Evaluation Metric:** 准确率（Accuracy），重点比较注入不同信息后的准确率变化
+
+**Main Result:** 
+1. **单一、有针对性的空间线索最有效**：堆砌多个空间线索会导致“认知过载”，反而降低性能。
+2. **自然语言描述优于精确数值**：描述性的空间语言（如“在...左前方”）比坐标、深度值等精确数值更有效。
+3. **常识知识是双刃剑**：过多或弱相关的常识会成为噪声，损害性能。
+4. **思维链依赖空间定位精度**：CoT 仅在空间定位足够精确时才有帮助；存在模糊性时会放大错误。
+
+**Limitation:** 
+1. 仅基于闭源/开源 API 模型，未涉及模型内部架构的修改
+2. 基准（VSR, EmbSpatial）的规模和多样性有限
+3. 分析维度有限，未探索多模态融合或训练阶段干预
+
+**Relevance to our paper:** 
+与候选方向 A 高度相关。论文直接回应了“VLM 空间推理能力如何提升”的问题，核心发现是：**“更多并不等于更好”——注入信息的精准度和形式比数量更重要**。这与“图像-文本对齐”质量直接相关：对齐质量决定了注入的空间信息是否被 VLM 正确理解和利用。论文的实证分析可作为你研究“对齐质量与空间推理能力关系”的理论支撑。此外，论文使用的 VSR 基准和实验设计可作为后续评估空间推理能力的参考。
+
+**Can be used as baseline?** No（这是分析论文，本身不是模型，但其发现可作为设计实验的理论依据）
