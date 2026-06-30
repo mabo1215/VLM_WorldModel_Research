@@ -552,3 +552,165 @@ GCIQL[52]——隐式Q学习[33]的目标条件版本，是一种强大且广泛
 - **不一致的语言grounding：** OpenVLA无FiLM时在ALOHA中语言跟随差但在LIBERO仿真中无此问题，根源尚不明确（可能与预训练中缺少双臂数据或其他因素有关）。
 ## Relevance to our paper:
 - 提供了VLA高效微调的系统性实证研究范式，三条关键设计维度（解码策略、动作表示、学习目标）的消融实验为VLA适应新任务提供了可复现的最佳实践。对于世界模型而言，此openVLA OFT+模型是对openVLA模型进行微调训练去使用与真实世界的机器人使用，世界模型的目标也是为了针对现实世界的情况去研发的，为我们去研究世界模型时，如何调整模型，使其能够更为适用于现实场景，提供了一条清晰，可行的方法。
+# review 11
+## Paper Title:
+- A Survey of Embodied AI: From Simulators to Research Tasks
+## Venue / Year:
+- Venue：IEEE Transactions on Emerging Topics in Computational Intelligence (IEEE TETCI)
+- Year：2022
+## Main Problem:
+- 1、缺乏对具身AI领域的当代全面综述：之前的综述大多发表于现代深度学习时代（2009年起）之前，已经过时
+- 2、具身AI模拟器的评估标准不统一：需要一套系统性的特征框架来比较不同模拟器的优劣
+- 3、模拟器、数据集与研究任务之间的关联不清晰：研究者难以根据自身任务选择合适的模拟器
+## Core Method:
+- 提出了一个系统性的具身AI综述框架，从模拟器到研究任务两个维度展开。核心贡献包括：\
+(1) 提出了7项技术特征（Environment, Physics, Object Type, Object Property, Controller, Action, Multi-Agent）用于评估9个具身AI模拟器，并进一步归纳为3个二级评估维度——Realism（真实感）、Scalability（可扩展性）和Interactivity（交互性）；\
+(2) 构建了具身AI研究任务的金字塔层次结构，从视觉探索（Visual Exploration）、视觉导航（Visual Navigation）到具身问答（Embodied QA），复杂度逐步递增；\
+(3) 建立了模拟器→数据集→研究任务之间的关联映射，为研究者根据研究任务选择合适的具身AI模拟器提供了系统指导。
+## Model Architecture:
+- 综述论文，对9个具身AI模拟器进行7+3特征对比，进一步归纳为三个二级评估维度——Realism（真实感）、Scalability（可扩展性）和Interactivity（交互性）：
+
+| Simulator | Year | Environment | Physics | Object Type | Object Property | Controller | Action | Multi-Agent | Engine |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| DeepMind Lab | 2016 | G | - | - | - | P, R | N | - | Quake II Arena |
+| AI2-THOR | 2017 | G | B | O | I, M | P, R | A, N | U | Unity 3D |
+| CHALET | 2018 | G | B | O | I, M | P | A, N | - | Unity 3D |
+| VirtualHome | 2018 | G | - | O | I, M | R | A, N | - | Unity 3D |
+| VRKitchen | 2019 | G | B | O | I, M | P, V | A, N, H | - | Unreal Engine 4 |
+| Habitat-Sim | 2019 | W | - | D | - | - | N | - | — |
+| iGibson | 2019 | W | B | D | I | P, R | A, N | U | — |
+| SAPIEN | 2020 | G | B | D | I, M | P, R | A, N | - | PhysX + ROS |
+| ThreeDWorld | 2020 | G | B, A | O | I | P, R, V | A, N, H | AT | Unity 3D |
+
+**符号说明**：Environment: G=Game-based, W=World-based | Physics: B=Basic, A=Advanced | Object Type: D=Dataset-driven, O=Asset-driven | Object Property: I=Interact-able, M=Multi-state | Controller: P=Python API, R=Virtual Robot, V=VR | Action: N=Navigation, A=Atomic Action, H=Human-Computer Interaction | Multi-Agent: AT=Avatar-based, U=User-based
+
+## Dataset:
+- 视觉探索 / 视觉导航数据集：\
+  1、Matterport3D（90张真实室内3D扫描，61/11/18训练/验证/测试划分）\
+  2、Gibson V1（高质量3D场景，支持iGibson交互增强）\
+  3、AI2-THOR（120个房间，4个类别，交互式环境）
+- 视觉-语言导航（VLN）数据集：\
+  1、Room-to-Room (R2R)（21,567条导航指令，平均29词）\
+  2、Cooperative Vision-and-Dialog Navigation (CVDN)（2,050段人机对话，7,000+轨迹）
+- 具身问答数据集：\
+  1、EQA数据集（5,000个问题，750个环境，45个物体，7种房间类型，基于SUNCG/House3D）\
+  2、MT-EQA数据集（6种组合式比较问题）\
+  3、IQUAD V1（75,000个多选题，基于AI2-THOR）
+## Evaluation Metric:
+### 模拟器评估（7+3特征框架）
+- Environment（游戏场景G vs 真实世界场景W）
+- Physics（基础B vs 高级A）
+- Object Type（数据集驱动D vs 资产驱动O）
+- Object Property（可交互I vs 多状态变化M）
+- Controller（Python API P / 机器人R / VR控制器V）
+- Action（导航N / 原子动作A / 人机交互H）
+- Multi-Agent（虚拟化身AT / 用户多智能体U）
+- 二级评估维度：Realism（真实感）、Scalability（可扩展性）、Interactivity（交互性）
+### 视觉探索
+- Amount of Targets Visited (ATV)：访问目标数量（如覆盖面积m²、探索百分比）
+- Impact on Downstream Tasks (D)：对下游导航任务的影响
+### 视觉导航
+- Success Weighted by Path Length (SPL)：路径长度加权成功率（主要指标）
+- Success Rate (SR)：成功率
+- Path Length Ratio (PLR)：路径长度比
+- Distance to Success / Navigation Error (DTS/NE)：导航误差距离
+- VLN额外：Oracle Success Rate (OSR), Trajectory Length (TL)
+- 视觉对话导航额外：Goal Progress (GP/d∆), Oracle Path Success Rate (OPSR)
+### 具身问答（EQA）
+- 导航性能：dT（终止距离）、d∆（目标进展）、dmin（最近距离）、%stop（提前终止率）、%rT（正确房间终止率）、%re（目标房间进入率）、IoU（目标交并比）、hT（命中准确率）、Episode Length
+- QA性能：Mean Rank (MR), Accuracy (Acc)
+## Main Result:
+| 维度 | 关键发现 |
+| :--- | :--- |
+| 模拟器全面性排名 | AI2-THOR、iGibson和Habitat-Sim在三个二级特征上均表现优异，是应用最广泛的三大模拟器 |
+| 渲染性能 | Habitat-Sim（10,000 fps/thread）和iGibson（1,000 fps/thread）显著领先于其他模拟器 |
+| 任务-模拟器映射 | 视觉探索和导航主要使用真实世界场景模拟器（Habitat-Sim/iGibson，高保真优势）；具身QA和带先验导航需多状态对象属性，AI2-THOR为首选；VLN目前不使用具身AI模拟器而是Matterport3D模拟器 |
+| 金字塔层次结构 | 视觉探索→视觉导航→具身QA，每层为上一层提供基础模块，复杂度递增 |
+| 点导航近完美结果 | DD-PPO在2.5B步训练后达到接近最短路径oracle的性能（差距3-5%），辅助任务可5.5×加速训练 |
+| 挑战赛推动发展 | iGibson Sim2Real Challenge / Habitat Challenge / RoboTHOR Challenge成为标准化评估平台 |
+| 预测性发展方向 | 提出任务型交互问答（TIQA）作为金字塔下一阶段任务——要求智能体先完成具体任务以获取信息再回答问题 |
+## Limitation:
+- 记忆架构： 长轨迹和多模态输入凸显了鲁棒记忆架构的重要性。RNN已知在捕获长期依赖方面有限，但哪种记忆类型最优尚无定论
+- 复杂性管理：每个新组件（如VLN加入语言理解，EQA加入QA）导致训练难度和成本指数增长。两个有希望的方向：混合方法（经典+学习）和先验知识注入
+- 多智能体设置： 目前缺乏支持多智能体的仿真器，该领域受到的关注相对较少
+## Relevance to our paper:
+- 作为具身AI领域的重要综述文献，系统梳理了从模拟器到研究任务的完整技术栈。其提出的7+3特征评估框架为理解和选择具身AI平台提供了结构化方法论，金字塔层次结构（探索→导航→问答）清晰展示了具身AI任务复杂度的递进关系。对于世界模型研究，该综述揭示了当前模拟器在真实感和物理准确性方面的核心瓶颈——高级物理特性的缺乏直接限制了世界模型学习真实物理规律的能力，这为我们设计兼顾视觉保真度与物理真实性的世界模型训练环境提供了重要的需求分析参考。
+# review 12
+## Paper Title:
+- Aligning Cyber Space with Physical World: A Comprehensive Survey on Embodied AI
+## Venue / Year:
+- Venue：IEEE/ASME Transactions on Mechatronics
+- Year：2025（arXiv首次提交2024年7月，最新修订2025年8月）
+## Main Problem:
+研究界对从MLM中获取强大感知和推理能力兴趣浓厚，但社区缺少一篇能帮助梳理现有具身AI研究、面临的挑战以及未来研究方向的全面综述。在MLM时代，作者团队旨在通过执行一项从赛博空间到物理世界的具身AI系统综述来填补这一空白。从不同视角进行综述，包括具身机器人、仿真器、四个代表性具身任务（视觉主动感知、具身交互、多模态智能体和虚实迁移适应）以及未来研究方向。
+## Core Method:
+- 提出了一个面向MLM时代的具身AI系统综述框架，核心贡献包括：\
+(1) 提出了基于MLM和WM的具身智能体ABC模型架构——AI Brain（A模型，具身世界模型负责环境理解）、Body（B模型，物理实体执行动作）、Cross-modal Sensors（C模型，多模态主动感知），系统刻画了具身智能体从赛博空间到物理世界的完整信息流；\
+(2) 将具身AI划分为六个核心组成部分——具身机器人、通用/真实场景模拟器、具身感知（主动视觉感知+视觉语言导航）、具身交互（具身问答+具身抓取）、具身智能体（任务规划+动作规划）、Sim-to-Real适应（具身世界模型+数据采集+控制），并分别进行了sota方法、核心范式和数据集的系统性梳理；\
+(3) 首次提出了ARIO（All Robots In One）数据集标准和统一大规模数据集（约300万片段，258个系列，321,064个任务），解决了多机器人平台数据格式不统一的痛点问题。
+## Model Architecture:
+- **具身智能体ABC架构**（综述提出的核心概念框架）：
+  - A模型（AI Brain）：具身世界模型，使智能体理解虚拟-物理环境，实现状态预测与决策推理
+  - B模型（Body）：物理实体（固定基座/轮式/履带式/四足/人形/仿生机器人），赋予智能体动作执行能力
+  - C模型（Cross-modal Sensors）：多模态传感器，使智能体主动感知多模态元素（视觉、3D点云、触觉、音频等），增强情境感知
+- **世界模型三范式**：
+  - 生成式方法（Generation-based）：如Sora、Pandora、3D-VLA、DWM，通过大规模生成模型内化世界知识
+  - 预测式方法（Prediction-based）：如I-JEPA、MC-JEPA、iVideoGPT、MuDreamer，在潜空间中学习预测表征，避免像素级重建
+  - 知识驱动方法（Knowledge-driven）：如ElastoGen、Holodeck、GRUtopia，将人工构建的物理规则或常识知识注入模型
+- **具身任务规划方法**：
+  - LLM涌现能力驱动（Translated LM, Inner Monologue, ReAd, Code as Policies）
+  - 视觉信息驱动（SayPlan使用3D场景图, ConceptGraphs, RoboGPT带重规划）
+  - VLM驱动（EmbodiedGPT的Embodied-Former, LEO的2D+3D视觉编码, RT系列, PaLM-E, Matcha的VLA模型）
+- **Sim-to-Real五范式**：Real2Sim2Real（数字孪生+RL微调）、TRANSIC（人在回路纠正+残差策略）、Domain Randomization（仿真参数随机化）、System Identification（高精度场景重建）、Lang4Sim2Real（自然语言桥接跨域图像表示）
+## Dataset:
+### 视觉语言导航（VLN）数据集
+- R2R（21,567条逐步指令，Matterport3D），R4R（200,000+条更长路径）
+- VLN-CE（连续环境扩展），REVERIE（21,702条远程物体指代），SOON（3,848条由粗到细指令）
+- ALFRED（25,743条交互式导航+操作，AI2-THOR），BEHAVIOR-1K（1,000个长序列日常任务，OmniGibson）
+- CVDN（2,050段对话导航），DialFRED（53,000段交互式对话导航）
+### 具身问答（EQA）数据集
+- EQA v1（5,000+问题，SUNCG/House3D），MT-EQA（19,000+多目标比较问题）
+- IQUAD V1（75,000+多选交互QA，AI2-THOR），SQA3D（33,400+知识密集QA，ScanNet）
+- OpenEQA（1,600+开放词汇QA，ScanNet/HM3D-Habitat），HM-EQA（500多选QA，HM3D-Habitat-VLM）
+- S-EQA（二值情境QA，VirtualHome-LLM），EXPRESS-Bench（2,044样本，探索感知QA，HM3D-Habitat）
+### 具身抓取数据集
+- 传统：Cornell（280物体/8K抓取），Jacquard（11K物体/1.1M抓取），6-DOF GraspNet（206物体/7.07M），ACRONYM（8,872物体/17.7M）
+- 语言引导：OCID-VLG（89物体/75K，空间推理），ReasoningGrasp（264物体/9.3M，逻辑推理），CapGrasp（51物体/50K，语义灵巧手）
+### ARIO数据集（该综述提出）
+- 约300万片段，来自258个机器人系列，321,064个任务，统一格式支持多形态机器人、多模态感官数据
+## Evaluation Metric:
+### 主动视觉感知
+- vSLAM：绝对轨迹误差（ATE）、相对位姿误差（RPE）、定位精度与建图完整性
+- 3D场景理解：3D目标检测mAP、语义分割mIoU、实例分割AP
+- 主动探索：信息增益（Information Gain）、覆盖率（Coverage）、探索效率（步数/面积）
+### 视觉语言导航（VLN）
+- Success Rate (SR)、Success Weighted by Path Length (SPL)、Oracle Success Rate (OSR)
+- Navigation Error (NE)、Trajectory Length (TL)
+### 具身问答（EQA）
+- 导航性能：距离目标终止距离（dT）、目标进展（d∆）、最近距离（dmin）、提前终止率（%stop）、IoU、命中准确率（hT）
+- QA性能：准确率（Accuracy）、平均排名（MR）
+### 具身抓取
+- 抓取成功率（Grasp Success Rate）、覆盖率（Declutter Rate）、接触丰富度
+### 具身智能体
+- 任务规划准确率、动作执行成功率、端到端任务完成率、重规划次数
+### 世界模型/Sim-to-Real
+- 预测误差（MSE/MAE）、生成质量（FVD/PSNR/SSIM/LPIPS）、策略迁移成功率
+## Main Result:
+| 维度 | 关键发现 |
+| :--- | :--- |
+| ABC模型框架 | 首次系统定义A（AI Brain/世界模型）、B（Body/物理实体）、C（Cross-modal Sensors/多模态感知）三级架构，为具身智能体的设计提供了统一参考模型 |
+| MLM时代vs前MLM时代 | 2023年后的MLM（LLM/VLM）为具身智能体注入了强大的感知、推理和规划能力——从规则驱动（PDDL/MCTS）转向数据驱动+涌现能力（LLM零样本规划、VLA端到端模型） |
+| 世界模型三范式 | 生成式（Sora等→内化世界知识）、预测式（JEPA系列→潜空间高效表征）、知识驱动（ElastoGen等→注入物理规则）——三种范式在保真度、效率、可解释性上各有取舍 |
+| RT-2（VLA）里程碑 | 将网络知识迁移到机器人控制，验证了VLM→VLA的技术路线可行性，但任务规划准确率96%而端到端完成率仅60%，说明动作执行是瓶颈 |
+| Sim-to-Real五范式 | Real2Sim2Real、TRANSIC、Domain Randomization、System Identification、Lang4Sim2Real——从数字孪生到自然语言桥接，方法从重仿真保真度向轻量化数据高效迁移演进 |
+| ARIO数据集 | 首个针对多形态机器人的统一数据集标准，覆盖258系列/321K任务/3M片段，解决了多机器人平台数据格式不统一的核心痛点 |
+| Cosmos平台 | NVIDIA Cosmos（2025）集成了自回归和扩散模型用于Text-to-World和Video-to-World生成，可能成为构建具身世界模型的重要基础设施 |
+## Limitation:
+- 综述为纯文献调研，未提供实验验证或基准测试结果，所有结论均基于对已有文献的归纳和推演
+- 提出的ARIO数据集标准和ABC模型架构目前仍处于概念阶段，其实用性和可扩展性有待实际部署验证
+- 具身世界模型的核心瓶颈仍在：复杂环境的高维感知、动态随机性建模、长期依赖关系处理、跨场景泛化能力不足——这些在该综述中被指出但未被实质性解决
+- Sim-to-Real适应仍然严重依赖大量高质量仿真数据，仿真与真实世界之间的域差距（传感器噪声、物理复杂度、环境多样性）是当前具身AI的最大障碍
+- 长序任务执行（如"清理厨房"）的端到端成功率尚未被系统评估——现有高层任务规划虽有初步成功，但在多样化场景中仍显不足
+
+## Relevance to our paper:
+- 作为MLM时代的具身AI综述文献，系统梳理了多模态大模型和世界模型如何重塑具身AI全技术栈。其提出的ABC模型架构为世界模型在具身智能体中的定位提供了清晰的概念框架。同时，该综述明确指出"缺乏世界模型的行动规划器无法仅凭LLM内部知识模拟物理规律"这一核心限制，有力论证了世界模型在弥合赛博空间与物理世界差距中的不可替代性。
